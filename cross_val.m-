@@ -1,0 +1,61 @@
+function [ error ] = cross_val( data, labels, model, k_folds )
+%cross_val(data,model,folds)
+
+%   %cross_val(data,labels,model,k_folds) takes in data, labels, your model, and the desired number of folds you want, and
+%randomly subsamples your data in order to provide cross-validation error on
+%your model. Error is RMSE error.
+
+%data: observations X features
+%model: takes in a "training" and "testing" set, outputs predictions
+%folds: a scalar number, which defines how many ways your data will be split. If unspecified, data will be divided into 10 folds
+
+if nargin < 3
+    k_folds = 10;
+end
+
+%% Create Folds
+
+num_obsv = size(data,1);
+obsv_per_fold = ceil(num_obsv/k_folds);
+extras = mod(num_obsv,k_folds);
+all_ind = [1:num_obsv;randperm(size(data,1),extras)];
+ n = length(all_ind);
+ p = randperm(n);
+rand_ind = all_ind(p);
+Indices = reshape(rand_ind,obsv_per_fold,k_folds);
+
+folds = cell(1,k_folds);
+for i = 1:k_folds
+    folds{i} = Indices(:,i);
+end
+
+%% Part 4 Question 2
+
+foldLabel = zeros;
+
+for i = 1:k_folds    % for each of the k_folds
+    trainInd = zeros;
+    Testfolds = 1:k_folds;
+    Testfolds(i) = 0;   % set fold "i" as the testing fold
+    Testfolds = Testfolds(find(Testfolds));
+    for j = 1:k_folds-1
+       trainInd(1:obsv_per_fold,j) = folds{Testfolds(j)}(:); %get all training indices
+    end
+    trainInd = reshape(trainInd, [],1);
+    
+    foldtrain = data(trainInd, :);   %get corresponding training Feats
+    foldTrainY = labels(trainInd);   %get labels for training Feats
+    
+    testInd = folds{i}(:);
+    foldtest = data(testInd, :);
+    foldTestY = Ytrain(testInd);
+    Classif = knnclassify(foldtest, foldtrain, foldTrainY);
+    foldLabel(testInd) = Classif;
+end
+    
+error = numel(find(foldLabel'~=Ytrain))/length(ntrainFeats)*100;
+% 20%
+
+
+end
+

@@ -1,0 +1,11 @@
+function [ rmse ] = compute_rmse( predicted, actual )
+%UNTITLED Summary of this function goes here
+%   Detailed explanation goes here
+
+load(predicted);
+load(actual);
+
+rmse = sqrt(sum((actual-predicted).^2)/numel(actual));
+
+end
+

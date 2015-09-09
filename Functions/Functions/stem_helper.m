@@ -1,0 +1,1 @@
+cellfun(@stem, A, 'UniformOutput', false)

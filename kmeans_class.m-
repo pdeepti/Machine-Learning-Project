@@ -1,0 +1,27 @@
+function [ output_args ] = kmeans_class( data_train, data_test,labels,num_ )
+%UNTITLED5 Summary of this function goes here
+%   Detailed explanation goes here
+
+data = [data_train;data_test];
+idx = kmeans(data,k);
+price_hat = zeros(length(data_test),1);
+k_prices= zeros(length(data_test),1);
+ind_test_all = zeros;
+for i=1:k
+    ind = (idx==i); %logical indicator of the k-classified entries in score
+    ind_train = ind(1:length(data_train)); %take only those indices which are for score_train
+    ind_test = ind(length(data_train)+1:end); %take only those indices which are for score_test
+    
+    data_k = data(ind,:);
+    data_k_train = data(ind_train,:);
+    data_k_test = data(ind_test,:);
+    
+    labels_k = labels(ind_train);
+  
+    mod = glmfit(data_k_train,labels_k,'normal','link','log');
+    price_hat(ind_test) = glmval(mod, data_k_test,'log');
+    %price_hat = k_prices + price_hat;
+    %ind_test_all(ind_test)=1;
+end
+end
+
